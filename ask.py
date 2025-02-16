@@ -1,37 +1,52 @@
-import ollama
-import chromadb
-from sentence_transformers import SentenceTransformer
+def main():
+    try:
+        import ollama
+        import chromadb
+        from sentence_transformers import SentenceTransformer
 
-# Load embedding model
-model = SentenceTransformer("all-MiniLM-L6-v2")
+        # Load embedding model
+        model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Load ChromaDB
-chroma_client = chromadb.PersistentClient(path="./book_db")
-collection = chroma_client.get_or_create_collection(name="book")
+        # Load ChromaDB
+        chroma_client = chromadb.PersistentClient(path="./book_db")
+        collection = chroma_client.get_or_create_collection(name="book")
 
-def retrieve_and_ask(question):
-    """Finds relevant text from the book and streams AI response."""
-    question_embedding = model.encode(question).tolist()
+        def retrieve_and_ask(question):
+            """Finds relevant text from the book and streams AI response."""
+            try:
+                question_embedding = model.encode(question).tolist()
+                # Get collection count
+                collection_count = collection.count()
+                n_results = min(3, collection_count) if collection_count > 0 else 1
+                
+                results = collection.query(
+                    query_embeddings=[question_embedding], 
+                    n_results=n_results
+                )
+                retrieved_text = "\n\n".join(results["documents"][0])
 
-    # Retrieve top 3 relevant paragraphs
-    results = collection.query(query_embeddings=[question_embedding], n_results=3)
-    retrieved_text = "\n\n".join(results["documents"][0])  # Combine retrieved paragraphs
+                prompt = f"Based only on the book, provide a concise answer:\n{retrieved_text}\n\nQuestion: {question}\nAnswer:"
+                response_stream = ollama.chat(model="jiffy", messages=[{"role": "user", "content": prompt}], stream=True)
 
-    # Create prompt
-    prompt = f"Based only on the book, provide a concise answer:\n{retrieved_text}\n\nQuestion: {question}\nAnswer:"
+                for chunk in response_stream:
+                    print(chunk['message']['content'], end="", flush=True)
+            except:
+                pass
 
-    # Stream response from Ollama
-    response_stream = ollama.chat(model="jiffy", messages=[{"role": "user", "content": prompt}], stream=True)
-
-    # Print response token-by-token
-    for chunk in response_stream:
-        print(chunk['message']['content'], end="", flush=True)
+        while True:
+            try:
+                query = input("\n🔍 Ask something about the book (or type 'exit' to quit): ")
+                if query.lower() == 'exit':
+                    break
+                print("\nJiffy: ")
+                retrieve_and_ask(query)
+                print()
+            except (EOFError, KeyboardInterrupt):
+                break
+    except (KeyboardInterrupt, ImportError, Exception):
+        pass
+    finally:
+        print("\nGoodbye!")
 
 if __name__ == "__main__":
-    while True:
-        query = input("\n🔍 Ask something about the book (or type 'exit' to quit): ")
-        if query.lower() == "exit":
-            break
-        print("\nJiffy: ")
-        retrieve_and_ask(query)
-        print()  # Add a newline after response
+    main()
