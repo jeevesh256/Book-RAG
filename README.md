@@ -1,4 +1,4 @@
-# BookRAG
+# Book RAG
 
 This project enables **question-answering on books** using **Retrieval-Augmented Generation (RAG)**. It extracts text from PDFs, stores it in a **ChromaDB** vector database, retrieves relevant context, and generates responses using an **Ollama** AI model.  
 A Phi-2 (2.7b) model is used for generating responses, with some parameter modifications applied. The Modelfile is included in the repository for easy setup and replication.
