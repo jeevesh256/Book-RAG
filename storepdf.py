@@ -1,6 +1,8 @@
 import fitz  # PyMuPDF for PDF processing
 import chromadb
 from sentence_transformers import SentenceTransformer
+import os
+import sys
 
 # Load embedding model
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -21,6 +23,10 @@ def extract_text_from_pdf(pdf_path):
 
 def store_book(pdf_path):
     """Stores book paragraphs in ChromaDB for retrieval."""
+    if not os.path.exists(pdf_path):
+        print(f"Error: File '{pdf_path}' does not exist.")
+        sys.exit(1)
+        
     print(f"📖 Extracting text from {pdf_path}...")
     paragraphs = extract_text_from_pdf(pdf_path)
 

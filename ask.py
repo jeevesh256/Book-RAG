@@ -1,8 +1,14 @@
 def main():
     try:
+        import os
         import ollama
         import chromadb
         from sentence_transformers import SentenceTransformer
+
+        # Check if database exists and has content
+        if not os.path.exists("./book_db") or not os.listdir("./book_db"):
+            print("Error: No book database found. Please store a book first using storepdf.py")
+            return
 
         # Load embedding model
         model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -38,7 +44,7 @@ def main():
                 query = input("\n🔍 Ask something about the book (or type 'exit' to quit): ")
                 if query.lower() == 'exit':
                     break
-                print("\nJiffy: ")
+                print("\nResponse: ")
                 retrieve_and_ask(query)
                 print()
             except (EOFError, KeyboardInterrupt):
