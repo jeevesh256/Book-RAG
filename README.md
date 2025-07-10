@@ -16,19 +16,16 @@ Ensure you have **Python 3.8+** installed, then run:
 pip install ollama chromadb sentence-transformers pymupdf
 ```
 
-### 2️⃣ Store a Book in the Database
-Run the following command to extract text from a **PDF** and store it in ChromaDB:
+### 2️⃣ Ask Questions About a Book
+Simply run the Q&A chatbot with your book:
 ```bash
-python3 store.py
+python3 ask.py your_book.pdf
 ```
-> Make sure to replace `test.pdf` in `store.py` with your book's filename.
+This will:
+1. Load your book (automatically replacing any previously stored book)
+2. Start an interactive Q&A session
 
-### 3️⃣ Ask Questions About the Book
-Once the book is stored, start the **Q&A chatbot**:
-```bash
-python3 ask.py
-```
-Then, enter your questions based on the book!
+> Supported file formats: PDF and TXT
 
 ## File Overview
 - `store.py` → Extracts text from a PDF and stores it in **ChromaDB**.
@@ -43,6 +40,11 @@ If you want to replace the stored book with a new one:
    ```
 2. Run `store.py` again with a new PDF.
 
+## Notes
+- This implementation ensures **retrieval-augmented generation (RAG)** by grounding responses in stored book content.
+- The **ChromaDB** database enables fast retrieval.
+- The AI **only answers based on the book**, ensuring **accurate** responses without hallucinating.
+- Any Ollama-compatible model can be used for response generation by changing the model name in `ask.py`.
 ## Notes
 - This implementation ensures **retrieval-augmented generation (RAG)** by grounding responses in stored book content.
 - The **ChromaDB** database enables fast retrieval.
