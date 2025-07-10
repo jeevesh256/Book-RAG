@@ -32,19 +32,6 @@ This will:
 - `ask.py` → Loads the stored text, retrieves relevant content, and queries **Ollama AI** for answers.
 - `book_db` → ChromaDB database directory where the extracted book data is stored.
 
-## Updating the Book
-If you want to replace the stored book with a new one:
-1. Delete the existing database folder:
-   ```bash
-   rm -rf book_db/
-   ```
-2. Run `store.py` again with a new PDF.
-
-## Notes
-- This implementation ensures **retrieval-augmented generation (RAG)** by grounding responses in stored book content.
-- The **ChromaDB** database enables fast retrieval.
-- The AI **only answers based on the book**, ensuring **accurate** responses without hallucinating.
-- Any Ollama-compatible model can be used for response generation by changing the model name in `ask.py`.
 ## Notes
 - This implementation ensures **retrieval-augmented generation (RAG)** by grounding responses in stored book content.
 - The **ChromaDB** database enables fast retrieval.
